@@ -1,0 +1,233 @@
+//---------------------------------------------------------------------------
+#include "KlientBuilder.h"
+#include <vcl.h>
+#include <string>
+#include <WS2tcpip.h>
+#include <time.h>
+#include <mutex>
+#pragma comment(lib, "ws2_32.lib")
+#include <iostream>
+#include <string.h>
+#include <windows.h>
+#include <stdio.h>
+#pragma hdrstop
+
+
+using namespace std;
+
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+TForm1 *Form1;
+
+string nick, ip;
+int klient();
+int socket_int;
+int DataThread = 1;
+
+//---------------------------------------------------------------------------
+__fastcall TForm1::TForm1(TComponent* Owner)
+	: TForm(Owner)
+{
+}
+//---------------------------------------------------------------------------
+
+
+const string currentDateTime()  {
+	time_t     now = time(0);
+	struct tm  tstruct;
+	char       cas[80];
+	tstruct = *localtime(&now);
+	strftime(cas, sizeof(cas), "%X", &tstruct);
+
+	return cas;
+}
+
+
+void prijmi(){
+	int sock = socket_int;
+	// èeká na odpoved
+	char buf[4096];
+	while (true) {
+		ZeroMemory(buf, 4096);
+		int bytesReceived = recv(sock, buf, 4096, 0);
+		if (bytesReceived > 0)
+		{
+
+			AnsiString a = buf;
+			Form1->ListBox->Items->Add(a);
+
+
+		}
+	}
+	closesocket(sock);
+	WSACleanup();
+}
+
+DWORD WINAPI mythread(__in LPVOID lpParameter)
+{
+	int sock = socket_int;
+	// èeká na odpoved
+	char buf[4096];
+	while (true) {
+		ZeroMemory(buf, 4096);
+		int bytesReceived = recv(sock, buf, 4096, 0);
+		if (bytesReceived > 0)
+		{
+
+			AnsiString a = buf;
+
+			Form1->ListBox->Items->Add(a);
+
+
+		}
+	}
+	return 0;
+}
+
+void __fastcall TForm1::CONNECTClick(TObject *Sender)
+{
+
+	nick = AnsiString(NICK_TXT->Text).c_str();
+	ip = AnsiString(IP_TXT->Text).c_str();
+
+	if(nick != "" && ip != "" )   {
+
+	socket_int=klient();
+	HANDLE myhandle;
+	DWORD mythreadid;
+	myhandle = CreateThread(0, 0, mythread, 0, 0, &mythreadid);
+			 }
+
+			 else {
+		   ShowMessage("Zadejte prosim IP a take jmeno uzivatele");
+
+			 }
+}
+
+int klient() {
+	string ipAddress = ip;			// IP adresa serveru
+	int port = 50000;						// Naslouchajici port na serveru
+
+	// Initialize WinSock
+	WSAData data;
+	WORD ver = MAKEWORD(2, 2);
+	int wsResult = WSAStartup(ver, &data);
+	if (wsResult != 0)
+	{
+	   //cerr << "Can't start Winsock, Err #" << wsResult << endl;
+		ShowMessage("Nelze inicialiyovat Winsock!");
+		return 0;
+	}
+
+
+	// Tvorba socketu
+	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock == INVALID_SOCKET)
+	{
+	  //	cerr << "Can't create socket, Err #" << WSAGetLastError() << endl;
+		ShowMessage("Nelze vytvorit socket!");
+		WSACleanup();
+		return 0;
+	}
+
+
+
+	// Hint struktura socketu
+	sockaddr_in hint;
+	hint.sin_family = AF_INET;
+	hint.sin_port = htons(port);
+	inet_pton(AF_INET, ipAddress.c_str(), &hint.sin_addr);
+
+	// Pøipoj se na server
+	int connResult = connect(sock, (sockaddr*)& hint, sizeof(hint));
+	if (connResult == SOCKET_ERROR)
+	{
+		//cerr << "Can't connect to server, Err #" << WSAGetLastError() << endl;
+		 ShowMessage("Nelze se pripojit, zkuste to znovu!");
+
+		closesocket(sock);
+		WSACleanup();
+		return 0;
+	}
+	   else {
+
+	   Form1->CONNECT->Enabled = false;
+	   Form1->NICK_TXT->Enabled = false;
+	   Form1->IP_TXT->Enabled = false;
+	   ShowMessage("Vitejte v chatu!");
+       }
+
+	return sock;
+
+}
+
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::Button1Click(TObject *Sender)
+{
+
+
+	string userInput;
+	userInput = AnsiString(Edit1->Text).c_str();
+
+	if(userInput != "")            // ochrana proti posílání prázdné zprávy
+
+	 {
+
+	Form1->ListBox->Items->Add(Edit1->Text);
+
+	userInput.insert(0, nick);
+	int a = nick.length();
+	userInput.insert(a, "> ");
+	send(socket_int, userInput.c_str(), userInput.size() + 1, 0);
+
+
+	Edit1->Clear();
+  }
+	else {
+
+	   Edit1->Clear();
+		// nic
+	}
+
+}
+//------------------------------------------------------------------------
+
+
+
+void __fastcall TForm1::Edit1KeyPress(TObject *Sender, WORD &Key, TShiftState Shift)
+{
+ if (Key == 13)         // zmáèknutí enter (13 v ansii == enter)
+  {
+
+
+  string userInput;
+  userInput = AnsiString(Edit1->Text).c_str();
+
+  if(userInput != "")       // ochrana proti posílání prázdné zprávy
+
+  {
+
+	Form1->ListBox->Items->Add(Edit1->Text);
+
+	userInput.insert(0, nick);
+	int a = nick.length();
+	userInput.insert(a, "> ");
+	send(socket_int, userInput.c_str(), userInput.size() + 1, 0);
+
+
+	Edit1->Clear();
+
+   }
+
+    else {
+
+	   Edit1->Clear();
+		// nic
+	}
+
+
+	 }
+}
+

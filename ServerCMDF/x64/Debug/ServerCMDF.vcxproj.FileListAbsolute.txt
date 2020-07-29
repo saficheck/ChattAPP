@@ -1,0 +1,2 @@
+C:\Users\Filip\Desktop\SemestralkaCPP\ServerCMDF\x64\Debug\ServerCMDF.exe
+C:\Users\Filip\Desktop\SemestralkaCPP\ServerCMDF\x64\Debug\ServerCMDF.pdb

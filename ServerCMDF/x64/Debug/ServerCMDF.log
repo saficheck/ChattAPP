@@ -1,0 +1,4 @@
+﻿  Source.cpp
+C:\Users\Filip\Desktop\SemestralkaCPP\ServerCMDF\Source.cpp(67,28): warning C4244: =: SOCKET se převádí na int; může dojít ke ztrátě dat.
+C:\Users\Filip\Desktop\SemestralkaCPP\ServerCMDF\Source.cpp(76,9): warning C4244: inicializování: SOCKET se převádí na int; může dojít ke ztrátě dat.
+  ServerCMDF.vcxproj -> C:\Users\Filip\Desktop\SemestralkaCPP\ServerCMDF\x64\Debug\ServerCMDF.exe

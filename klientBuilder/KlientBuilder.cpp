@@ -1,0 +1,231 @@
+// Potrebne importy
+
+#include "KlientBuilder.h"
+#include <vcl.h>
+#include <string>
+#include <WS2tcpip.h>
+#include <time.h>
+#include <mutex>
+#pragma comment(lib, "ws2_32.lib")
+#include <iostream>
+#include <string.h>
+#include <windows.h>
+#include <stdio.h>
+#pragma hdrstop
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+
+using namespace std;
+
+TForm1 *Form1; // Form GUI builder
+
+// Uzivatelske jmeno, IP, fce klient, socket, thread
+
+string nick, ip;
+int klient();
+int socket_int;
+int DataThread = 1;
+
+__fastcall TForm1::TForm1(TComponent * Owner) // Automaticky vytvoril builder
+	: TForm(Owner) {
+}
+
+//DWORD WINAPI mythread(__in LPVOID lpParameter)
+int mythread()
+	// Funkce kterou budeme pouzivat pres thready
+{
+	int sock = socket_int; // Promenna pro socket
+	// Ceka na odpoved
+	char buf[4096]; // Promenna pro zpravu
+	while (true)
+
+	{
+		ZeroMemory(buf, 4096); // Vynulovani pameti v promenne pro zpravu
+		int bytesReceived = recv(sock, buf, 4096, 0);
+		// Funkce dokaze ziskat  data z pripojeneho socketu (socket, buf, velikost, flag = upravuje chovani funkce, 0 je asi default)
+		if (bytesReceived > 0) // Pokud jsme prijali zpravu tak ...
+		{
+
+			AnsiString a = buf; // AnsiString promenna abych mohl vyuzivat gui
+			Form1->ListBox->Items->Add(a); // Pridani zpravy do okna pro klienta
+
+		}
+	}
+	closesocket(sock); // Odpojeni socketu
+	WSACleanup(); // Ukonceni funkcnosti Winsock
+	return 0;
+}
+
+void __fastcall TForm1::CONNECTClick(TObject *Sender)
+	// Funkce pokud kliknu na pripojit se v gui
+{
+
+	nick = AnsiString(NICK_TXT->Text).c_str();
+	// Nactu do promenne nick z text pole prezdivky
+	ip = AnsiString(IP_TXT->Text).c_str();
+	// Nactu do promenne ip z text pole IP adresy
+
+	if (nick != "" && ip != "") // Osetruji aby ani jedno z poli nebylo prazdne
+
+	{
+
+		socket_int = klient();
+		// Funkci jejiz return je struktura socketu ulozim do promenne
+		HANDLE myhandle;
+		// Promenna pro ulozeni threadu vystupu funkce CreateThread do promenne
+		DWORD mythreadid; // Identifikator threadu
+		//myhandle = CreateThread(0, 0, mythread, 0, 0, &mythreadid);
+		recvThread = new thread(mythread);
+
+		// Tvorba threadu = (defaultni atribut security, defaultni velikost "stack", nazev funkce pro thread, argument funkce, default hodnota "flag", vraci identifikator threadu)
+	}
+
+	else
+
+	{
+		ShowMessage("Zadejte prosim IP a take jmeno uzivatele");
+		// Pokud nevyplnim pole dostanu vyskakovaci gui okno s informacemi pro uzivatele
+
+	}
+}
+
+int klient() // Klient
+
+{
+	string ipAddress = ip; // IP adresa serveru, program si ji bere z gui
+	int port = 50000; // Naslouchajici port na serveru
+
+	// Initialize WinSock
+	WSAData data;
+	// Struktura obsajujici informace ohledne implementaci windows socketu
+	WORD ver = MAKEWORD(2, 2);
+	// Potreba pro WSAStartup, nejsem si jisty konkretne jaky je ucel (jakesi verzovani)
+	int wsResult = WSAStartup(ver, &data);
+	// Inicializacni funkce, (verze, struktura socketu)
+	if (wsResult != 0) // Error
+
+	{
+
+		ShowMessage("Nelze inicializovat Winsock!");
+		return 0;
+	}
+
+	// Tvorba socketu
+	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+	// Socket funkce vytvori socket (Ipv4, oboustranne spojeni, protokol(0 je asi nejaka default hodnota))
+	if (sock == INVALID_SOCKET) // Osetreni v pripade chyby
+
+	{
+
+		ShowMessage("Nelze vytvorit socket!");
+		WSACleanup(); // Ukonceni funkcnosti Winsock
+		return 0;
+	}
+
+	// Hint struktura socketu
+	sockaddr_in hint; // Svazani IP adresy a portu k socketu
+	hint.sin_family = AF_INET;
+	// "Adress family transportni adresy", pry podle internetu vzdy na hodnotu AF_INET
+	hint.sin_port = htons(port);
+	// Cislo portu, htons vraci hodnotu v tcp/ip bytovem poradi
+	inet_pton(AF_INET, ipAddress.c_str(), &hint.sin_addr);
+	// Funkce prevadi ipv4 nebo ipv6 adresu do binarni formy
+
+	// Pøipoj se na server
+	int connResult = connect(sock, (sockaddr*)&hint, sizeof(hint));
+	// Connect zajistuje pripojeni na specificky socket  (identifikator socketu, pointer na strukturu adresy, delka pointeru v bytech)
+	if (connResult == SOCKET_ERROR) // Pokud chyb tak ...
+
+	{
+
+		ShowMessage("Nelze se pripojit, zkuste to znovu!");
+		// Vyskakovaci okno s informaci pro uzivatele
+
+		closesocket(sock); // Odpojeni socketu
+		WSACleanup(); // Ukonceni funkcnosti Winsock
+		return 0;
+	}
+	else // Pokud pripojeni probehne v poradku tak ...
+
+	{
+
+		Form1->CONNECT->Enabled = false;
+		// Deaktivace tlacitka pripojeni se v gui
+		Form1->NICK_TXT->Enabled = false;
+		// Deaktivace psani do text boxu prezdivky v gui
+		Form1->IP_TXT->Enabled = false;
+		// Deaktivace psani do text boxu IP adresy v gui
+		ShowMessage("Vitejte v chatu!");
+		// Vyskakovaci okno s informaci pro uzivatele
+	}
+
+	return sock;
+	// vraci pripojeni socketu
+}
+
+void __fastcall TForm1::Button1Click(TObject *Sender)
+	// Tlacitko odeslat klikani mysi
+{
+
+	string userInput; // Promenna pro zpravu
+	userInput = AnsiString(Edit1->Text).c_str(); // Text z pole zpravy
+
+	if (userInput != "") // Ochrana proti posílání prázdné zprávy
+
+	{
+
+		Form1->ListBox->Items->Add(Edit1->Text);
+		// Pridani textu do boxu pro zpravy
+
+		userInput.insert(0, nick);
+		// Pridam ke zprave nazev uzivatele na zacatek zpravy
+		int a = nick.length(); // Delka stringu uzivatele v intu
+		userInput.insert(a, "> "); // Pridam za delku nazvu uzivatele znak
+		send(socket_int, userInput.c_str(), userInput.size() + 1, 0);
+		// Odeslu data na pripojeny socket (identifikator socketu, zprava, delka, upravuje cinnost funkce)
+
+		Edit1->Clear(); // Vynuluje pole pro zpravu
+	}
+	else {
+
+		Edit1->Clear(); // Pokud neprobehne tak radsi taky vynulovat
+
+	}
+
+}
+
+void __fastcall TForm1::Edit1KeyPress(TObject *Sender, WORD &Key,
+	TShiftState Shift) // Odeslani zpravy pomoci enteru na klavesnici
+{
+	if (Key == 13) // Pokud ztlacim enter (13 v ansii == enter)
+	{
+
+		string userInput; // Promenna pro zpravu
+		userInput = AnsiString(Edit1->Text).c_str(); // Text z pole zpravy
+
+		if (userInput != "") // Ochrana proti posílání prázdné zprávy
+
+		{
+
+			Form1->ListBox->Items->Add(Edit1->Text);
+			// Pridani textu do boxu pro zpravy
+
+			userInput.insert(0, nick);
+			// Pridam ke zprave nazev uzivatele na zacatek zpravy
+			int a = nick.length(); // Delka stringu uzivatele v intu
+			userInput.insert(a, "> "); // Pridam za delku nazvu uzivatele znak
+			send(socket_int, userInput.c_str(), userInput.size() + 1, 0);
+			// Odeslu data na pripojeny socket (identifikator socketu, zprava, delka, upravuje cinnost funkce)
+
+			Edit1->Clear(); // Vynuluje pole pro zpravu
+
+		}
+
+		else {
+
+			Edit1->Clear(); // Pokud neprobehne tak radsi taky vynulovat
+
+		}
+
+	}
+}

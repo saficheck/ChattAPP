@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.762,C:\Users\Filip\Desktop\SemestralkaCPP\KlientBuilder.cpp=C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Chatter.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.762,C:\Users\Filip\Desktop\SemestralkaCPP\KlientBuilder.h=C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Chatter.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.891,C:\Users\Filip\Desktop\SemestralkaCPP\KlientBuilder.h=C:\Users\Filip\Desktop\SemestralkaCPP\klientBuilder\KlientBuilder.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.891,C:\Users\Filip\Desktop\SemestralkaCPP\KlientBuilder.cpp=C:\Users\Filip\Desktop\SemestralkaCPP\klientBuilder\KlientBuilder.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.261,C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Chatter.dfm=C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.622,=C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.676,=C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.261,C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Chatter.cpp=C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Unit1.cpp</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.762,C:\Users\Filip\Desktop\SemestralkaCPP\KlientBuilder.dfm=C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Chatter.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.423,C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Chatt.cbproj=C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Project1.cbproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.261,C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Chatter.h=C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Unit1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.891,C:\Users\Filip\Desktop\SemestralkaCPP\KlientBuilder.dfm=C:\Users\Filip\Desktop\SemestralkaCPP\klientBuilder\KlientBuilder.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.419,C:\Users\Filip\Documents\Embarcadero\Studio\Projects\ChattPCH1.h=C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Project1PCH1.h</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.243,C:\Users\Filip\Desktop\SemestralkaCPP\klientBuilder\Chatt.cbproj=C:\Users\Filip\Documents\Embarcadero\Studio\Projects\Chatt.cbproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.487,C:\Users\Filip\Desktop\SemestralkaCPP\klientBuilder\Chatt.cbproj=C:\Users\Filip\Desktop\SemestralkaCPP\klientBuilder\Chatt.cbproj</Transaction>
+  </Transactions>
+</BorlandProject>

@@ -1,0 +1,2 @@
+C:\Users\Filip\source\repos\ServerCMDF\Debug\ServerCMDF.exe
+C:\Users\Filip\source\repos\ServerCMDF\Debug\ServerCMDF.pdb

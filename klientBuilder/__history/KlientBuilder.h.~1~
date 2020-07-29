@@ -1,0 +1,41 @@
+//---------------------------------------------------------------------------
+#ifndef KlientBuilderH
+#define KlientBuilderH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Graphics.hpp>
+#include <string>
+//---------------------------------------------------------------------------
+
+using namespace std;
+
+class TForm1 : public TForm
+{
+__published:	// IDE komponenty
+	TEdit *NICK_TXT;
+	TLabel *NICK_L;
+	TButton *CONNECT;
+	TLabel *IP_L;
+	TEdit *IP_TXT;
+	TPanel *TPanel;
+	TEdit *Edit1;
+	TButton *Button1;
+	TListBox *ListBox;
+	void __fastcall CONNECTClick(TObject *Sender);
+	void __fastcall Button1Click(TObject *Sender);
+	void __fastcall Edit1KeyPress(TObject *Sender, WORD &Key, TShiftState Shift);
+
+private:	// Deklarace uzivatele
+void prijmi(int sock);
+void posli(int sock, string str);
+public:		// Deklarace uzivatele
+	__fastcall TForm1(TComponent* Owner);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TForm1 *Form1;
+//---------------------------------------------------------------------------
+#endif
